@@ -12,45 +12,56 @@
         .config-input { background: #0f172a; border: 1px solid #1e293b; border-radius: 0.5rem; padding: 0.5rem; font-size: 0.875rem; font-family: ui-monospace, monospace; color: inherit; outline: none; }
         .config-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); }
         .gradient-text { background: linear-gradient(to right, #60a5fa, #a855f7); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+        #setupWizard { transition: opacity 0.5s ease-in-out; }
+        #mainContent.locked { filter: blur(25px); pointer-events: none; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-200 min-h-screen font-sans">
+<body class="bg-slate-950 text-slate-200 min-h-screen font-sans overflow-x-hidden">
 
-    <nav class="p-6 border-b border-slate-800 flex justify-between items-center glass sticky top-0 z-50">
-        <h1 class="text-2xl font-black tracking-tighter">
-            TAXAPP<span class="gradient-text">CANADA</span>
-            <span class="text-[10px] font-mono text-slate-500 ml-2 uppercase">TAC v2026.1</span>
-        </h1>
-        <button id="settingsBtn" class="bg-slate-800 hover:bg-slate-700 p-2 px-4 rounded-xl transition-all border border-slate-700 text-sm font-medium">
-            <i class="fa-solid fa-sliders mr-2"></i> Parameters
-        </button>
-    </nav>
+    <div id="setupWizard" class="fixed inset-0 z-[100] bg-slate-950/90 flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="max-w-md w-full bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-2xl">
+            <div id="wizardContent" class="space-y-6">
+                </div>
+        </div>
+    </div>
 
-    <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="space-y-6">
-            <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl">
-                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 block">Annual Base Salary</label>
-                <input type="number" id="baseSalary" value="106050" class="w-full bg-slate-950 border border-slate-800 rounded-2xl py-4 px-4 text-3xl font-mono text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                <div class="mt-8 space-y-3">
-                    <div class="flex justify-between text-sm"><span class="text-slate-500">Total Gross</span><span id="displayGross" class="font-mono">$0</span></div>
-                    <div class="flex justify-between text-sm font-bold"><span class="text-slate-500">Net Take Home</span><span id="displayNet" class="font-mono text-green-400">$0</span></div>
+    <div id="mainContent" class="locked transition-all duration-700">
+        <nav class="p-6 border-b border-slate-800 flex justify-between items-center glass sticky top-0 z-50">
+            <h1 class="text-2xl font-black tracking-tighter">
+                TAXAPP<span class="gradient-text">CANADA</span>
+                <span class="text-[10px] font-mono text-slate-500 ml-2 uppercase">TAC v2026.1</span>
+            </h1>
+            <button id="settingsBtn" class="bg-slate-800 hover:bg-slate-700 p-2 px-4 rounded-xl transition-all border border-slate-700 text-sm font-medium">
+                <i class="fa-solid fa-sliders mr-2"></i> Parameters
+            </button>
+        </nav>
+
+        <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="space-y-6">
+                <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 block">Annual Base Salary</label>
+                    <input type="number" id="baseSalary" value="106050" class="w-full bg-slate-950 border border-slate-800 rounded-2xl py-4 px-4 text-3xl font-mono text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                    <div class="mt-8 space-y-3">
+                        <div class="flex justify-between text-sm"><span class="text-slate-500">Total Gross</span><span id="displayGross" class="font-mono">$0</span></div>
+                        <div class="flex justify-between text-sm font-bold"><span class="text-slate-500">Net Take Home</span><span id="displayNet" class="font-mono text-green-400">$0</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-amber-600/10 border border-amber-500/20 p-6 rounded-3xl">
+                    <h3 class="text-amber-500 font-bold uppercase text-[10px] tracking-widest mb-2 text-center">Bracket Safety Buffer</h3>
+                    <div class="flex items-baseline justify-center gap-2">
+                        <span id="otHours" class="text-6xl font-mono font-bold text-white">0</span>
+                        <span class="text-slate-500 text-sm font-bold uppercase">OT Hours Left</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-amber-600/10 border border-amber-500/20 p-6 rounded-3xl">
-                <h3 class="text-amber-500 font-bold uppercase text-[10px] tracking-widest mb-2">Bracket Safety Buffer</h3>
-                <div class="flex items-baseline gap-2">
-                    <span id="otHours" class="text-5xl font-mono font-bold text-white">0</span>
-                    <span class="text-slate-500 text-sm">OT Hours Left</span>
-                </div>
+            <div class="lg:col-span-2 bg-slate-900 p-8 rounded-3xl border border-slate-800 shadow-xl">
+                <h2 class="text-lg font-bold mb-6">Annual Deductions Breakdown</h2>
+                <div id="breakdownList" class="space-y-4"></div>
             </div>
-        </div>
-
-        <div class="lg:col-span-2 bg-slate-900 p-8 rounded-3xl border border-slate-800 shadow-xl">
-            <h2 class="text-lg font-bold mb-6">Annual Deductions Breakdown</h2>
-            <div id="breakdownList" class="space-y-4"></div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <div id="configModal" class="fixed inset-0 z-50 hidden bg-slate-950 overflow-y-auto">
         <div class="max-w-5xl mx-auto p-8">
@@ -78,6 +89,7 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between items-center text-xs"><span>DCPP</span><input type="number" id="conf_dcEmp" value="4" class="config-input w-16 text-center text-blue-400"></div>
                                 <div class="flex justify-between items-center text-xs"><span>RRSP</span><input type="number" id="conf_rrspEmp" value="7" class="config-input w-16 text-center text-blue-400"></div>
+                                <div class="flex justify-between items-center text-xs"><span>Shift Prem (%)</span><input type="number" id="conf_nsb" value="5" class="config-input w-16 text-center text-blue-400"></div>
                             </div>
                         </div>
                         <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">

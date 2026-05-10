@@ -92,3 +92,65 @@ document.getElementById('saveConfig').onclick = () => {
 };
 
 calculate();
+
+// Add these variables to the top of your script.js
+let currentStep = 0;
+const setupData = {};
+
+const questions = [
+    { key: 'baseSalary', label: 'What is your Annual Base Salary?', type: 'number', placeholder: '106050', icon: 'fa-money-bill-wave' },
+    { key: 'shiftPremium', label: 'Any Shift Premium? (NSB %)', type: 'number', placeholder: '5', icon: 'fa-clock' },
+    { key: 'hourlyRate', label: 'What is your Base Hourly Rate?', type: 'number', placeholder: '51', icon: 'fa-briefcase' },
+    { key: 'dcRate', label: 'Employee DCPP Contribution (%)', type: 'number', placeholder: '4', icon: 'fa-piggy-bank' }
+];
+
+function renderStep() {
+    const step = questions[currentStep];
+    const container = document.getElementById('stepContainer');
+    
+    container.innerHTML = `
+        <div class="space-y-6">
+            <div class="flex justify-center text-blue-500 text-4xl mb-4">
+                <i class="fa-solid ${step.icon}"></i>
+            </div>
+            <label class="block text-center text-lg font-bold">${step.label}</label>
+            <input type="number" id="wizardInput" placeholder="${step.placeholder}" 
+                   class="w-full bg-slate-950 border border-slate-800 rounded-xl py-4 px-4 text-center text-2xl font-mono focus:border-blue-500 outline-none">
+            <button onclick="nextStep()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition-all">
+                ${currentStep === questions.length - 1 ? 'Finish Setup' : 'Next Question'}
+            </button>
+        </div>
+    `;
+    
+    document.getElementById('wizardInput').focus();
+}
+
+function nextStep() {
+    const val = document.getElementById('wizardInput').value;
+    setupData[questions[currentStep].key] = val || questions[currentStep].placeholder;
+
+    if (currentStep < questions.length - 1) {
+        currentStep++;
+        renderStep();
+    } else {
+        finishSetup();
+    }
+}
+
+function finishSetup() {
+    // Transfer setup data to the main dashboard inputs
+    document.getElementById('baseSalary').value = setupData.baseSalary;
+    document.getElementById('conf_dcEmp').value = setupData.dcRate;
+    document.getElementById('conf_hourly').value = setupData.hourlyRate;
+    // Note: You might need to add an input for Shift Premium in your config modal too
+    
+    // Hide wizard and unblur dashboard
+    document.getElementById('setupWizard').classList.add('hidden');
+    const main = document.getElementById('mainContent');
+    main.classList.remove('blur-xl', 'pointer-events-none');
+    
+    calculate(); // Run first calculation
+}
+
+// Initialize
+renderStep();
