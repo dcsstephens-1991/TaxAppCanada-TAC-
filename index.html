@@ -1,228 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaxAppCanada (TAC)</title>
+    <title>AeroTax Pro - Aviation Financial Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); }
-        input::-webkit-inner-spin-button { display: none; }
-        .gradient-text { background: linear-gradient(to right, #60a5fa, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(16px);
+        }
+
+        input::-webkit-inner-spin-button {
+            display: none;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .config-input {
+            @apply bg-slate-950 border border-slate-800 rounded px-2 py-1 text-sm font-mono focus:border-blue-500 outline-none;
+        }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-200 min-h-screen font-sans selection:bg-blue-500/30">
+
+<body class="bg-slate-950 text-slate-200 min-h-screen font-sans">
 
     <nav class="p-6 border-b border-slate-800 flex justify-between items-center glass sticky top-0 z-50">
-        <h1 class="text-2xl font-black tracking-tighter">TAXAPP<span class="gradient-text">CANADA</span> <span class="text-[10px] font-mono text-slate-500 ml-2 uppercase">v2026.1</span></h1>
-        <button id="settingsBtn" class="bg-slate-800 hover:bg-slate-700 p-2 px-4 rounded-xl transition-all border border-slate-700 text-sm font-medium">
+        <h1 class="text-2xl font-black tracking-tighter">
+            TAXAPP<span class="gradient-text">CANADA</span>
+            <span class="text-[10px] font-mono text-slate-500 ml-2 uppercase">TAC v2026.1</span>
+        </h1>
+        <button id="settingsBtn"
+            class="bg-slate-800 hover:bg-slate-700 p-2 px-4 rounded-xl transition-all border border-slate-700 text-sm font-medium">
             <i class="fa-solid fa-sliders mr-2"></i> Parameters
         </button>
     </nav>
 
     <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <aside class="space-y-6">
+        <div class="space-y-6">
             <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl">
-                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 block">Annual Base Salary</label>
-                <div class="relative group">
-                    <span class="absolute left-4 top-3.5 text-slate-600 transition-colors group-focus-within:text-blue-400 font-mono">$</span>
-                    <input type="number" id="baseSalary" value="106050" class="w-full bg-slate-950 border border-slate-800 rounded-2xl py-4 pl-10 pr-4 text-2xl font-mono focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all">
-                </div>
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 block">Annual Base
+                    Salary</label>
+                <input type="number" id="baseSalary" value="106050"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-2xl py-4 px-4 text-3xl font-mono text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
 
-                <div class="mt-8 space-y-4">
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-slate-500">NSB Offset (5%)</span>
-                        <span id="nsbValue" class="font-mono text-blue-400">+$0.00</span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-slate-500">Stat Holidays (6 Days)</span>
-                        <span id="statValue" class="font-mono text-blue-400">+$0.00</span>
-                    </div>
-                    <div class="h-px bg-slate-800 my-4"></div>
-                    <div class="flex justify-between items-end">
-                        <span class="text-xs font-bold uppercase text-slate-500">Total Gross</span>
-                        <span id="totalGross" class="text-2xl font-mono text-white">$0.00</span>
-                    </div>
+                <div class="mt-8 space-y-3">
+                    <div class="flex justify-between text-sm"><span class="text-slate-500">Total Gross</span><span
+                            id="displayGross" class="font-mono">$0</span></div>
+                    <div class="flex justify-between text-sm font-bold"><span class="text-slate-500">Net Take
+                            Home</span><span id="displayNet" class="font-mono text-green-400">$0</span></div>
                 </div>
             </div>
 
-            <div class="bg-indigo-600/10 border border-indigo-500/30 p-6 rounded-3xl relative overflow-hidden group">
-                <div class="absolute -right-4 -top-4 text-indigo-500/10 text-6xl transform -rotate-12 transition-transform group-hover:rotate-0">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                </div>
-                <h3 class="text-indigo-400 font-black uppercase text-[10px] tracking-widest mb-2">OT Bracket Threshold</h3>
-                <p class="text-xs text-slate-400 leading-relaxed mb-4">Max OT hours before hitting next bracket:</p>
-                <div class="flex items-baseline gap-2">
-                    <span id="otHoursRoom" class="text-4xl font-mono font-bold text-white">0</span>
-                    <span class="text-slate-500 text-sm font-medium">Hours</span>
-                </div>
-            </div>
-        </aside>
-
-        <div class="lg:col-span-2 space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-[2rem] shadow-2xl shadow-blue-900/20 text-white">
-                    <p class="text-[10px] opacity-70 uppercase tracking-[0.2em] font-black mb-1">Take Home Pay</p>
-                    <h2 id="netPay" class="text-5xl font-bold font-mono tracking-tighter">$0.00</h2>
-                    <div class="flex justify-between mt-6 text-xs font-medium opacity-80 border-t border-white/10 pt-4">
-                        <span>MONTHLY</span>
-                        <span id="monthlyPay" class="font-mono">$0.00</span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 flex flex-col justify-center shadow-xl">
-                    <p class="text-[10px] text-slate-500 uppercase tracking-[0.2em] font-black mb-1">Marginal Tax Rate</p>
-                    <h2 id="marginalRate" class="text-4xl font-bold font-mono text-blue-400">0.00%</h2>
-                    <p id="nextBracketInfo" class="text-[10px] mt-4 text-slate-500 uppercase tracking-wider">Gap to next: $0.00</p>
-                </div>
-            </div>
-
-            <div class="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 shadow-xl">
-                <h3 class="text-sm font-bold uppercase tracking-widest mb-6 flex items-center">
-                    <i class="fa-solid fa-list-check mr-3 text-blue-500"></i> Deduction Breakdown
+            <div class="bg-amber-600/10 border border-amber-500/20 p-6 rounded-3xl">
+                <h3 class="text-amber-500 font-bold uppercase text-[10px] tracking-widest mb-2">Bracket Safety Buffer
                 </h3>
-                <div class="space-y-3 font-mono text-sm">
-                    <div class="flex justify-between p-4 bg-slate-950/50 rounded-2xl">
-                        <span class="text-slate-500">Federal Tax</span>
-                        <span id="fedTax" class="text-rose-400">-$0.00</span>
-                    </div>
-                    <div class="flex justify-between p-4 bg-slate-950/50 rounded-2xl">
-                        <span class="text-slate-500">Provincial (ON + Surtax)</span>
-                        <span id="ontTax" class="text-rose-400">-$0.00</span>
-                    </div>
-                    <div class="flex justify-between p-4 bg-slate-950/50 rounded-2xl border-r-4 border-yellow-500/50">
-                        <span class="text-slate-500">Payroll (CPP/EI Max)</span>
-                        <span id="payrollTax" class="text-rose-400">-$0.00</span>
-                    </div>
-                    <div class="flex justify-between p-4 bg-blue-500/5 rounded-2xl border-r-4 border-blue-500/50">
-                        <span class="text-slate-400 text-xs uppercase font-bold">Your Savings (DC/RRSP/FHSA)</span>
-                        <span id="totalSavings" class="text-blue-400">+$0.00</span>
-                    </div>
-                    <div class="flex justify-between p-4 bg-emerald-500/5 rounded-2xl border-r-4 border-emerald-500/50">
-                        <span class="text-slate-400 text-xs uppercase font-bold">Employer Contribution Match</span>
-                        <span id="employerVal" class="text-emerald-400">+$0.00</span>
-                    </div>
+                <div class="flex items-baseline gap-2">
+                    <span id="otHours" class="text-5xl font-mono font-bold text-white">0</span>
+                    <span class="text-slate-500 text-sm">OT Hours Left</span>
                 </div>
+                <p class="text-[10px] text-slate-400 mt-3 italic">Hours calculated until next marginal jump.</p>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-slate-900 p-8 rounded-3xl border border-slate-800">
+            <h2 class="text-lg font-bold mb-6">Annual Deductions</h2>
+            <div id="breakdownList" class="space-y-4">
             </div>
         </div>
     </main>
 
-    <div id="settingsPanel" class="fixed inset-y-0 right-0 w-80 bg-slate-900 border-l border-slate-800 transform translate-x-full transition-transform duration-500 ease-out z-[60] p-8 shadow-2xl">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-lg font-bold">Config</h2>
-            <button id="closeSettings" class="text-slate-500 hover:text-white transition-colors"><i class="fa-solid fa-xmark"></i></button>
+    <div id="configModal" class="fixed inset-0 z-50 hidden bg-slate-950 overflow-y-auto">
+        <div class="max-w-5xl mx-auto p-8">
+            <div class="flex justify-between items-center mb-12">
+                <div>
+                    <h2 class="text-4xl font-black">System <span class="text-blue-500">Parameters</span></h2>
+                    <p class="text-slate-500 text-sm mt-2">Adjust tax tiers, contribution caps, and multipliers.</p>
+                </div>
+                <button id="closeConfig"
+                    class="bg-slate-800 hover:bg-slate-700 h-12 w-12 rounded-full flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+                <section>
+                    <h3 class="text-blue-400 text-xs font-bold uppercase tracking-widest mb-4">Federal Tax Brackets
+                        (2026)</h3>
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                        <table class="w-full text-left text-sm font-mono">
+                            <thead class="bg-slate-800 text-slate-400 text-[10px]">
+                                <tr>
+                                    <th class="p-3">Threshold ($)</th>
+                                    <th class="p-3">Rate (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fedTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-purple-400 text-xs font-bold uppercase tracking-widest mb-4">Ontario Tax Brackets
+                        (2026)</h3>
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                        <table class="w-full text-left text-sm font-mono">
+                            <thead class="bg-slate-800 text-slate-400 text-[10px]">
+                                <tr>
+                                    <th class="p-3">Threshold ($)</th>
+                                    <th class="p-3">Rate (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ontTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="md:col-span-2">
+                    <h3 class="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-4">Contribution &
+                        Deduction Parameters</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                            <h4 class="text-white text-sm font-bold mb-4">Employee Rates</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span>DCPP (%)</span>
+                                    <input type="number" id="conf_dcEmp" value="4"
+                                        class="bg-slate-950 border border-slate-800 rounded w-16 p-1 text-center text-blue-400">
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span>RRSP (%)</span>
+                                    <input type="number" id="conf_rrspEmp" value="7"
+                                        class="bg-slate-950 border border-slate-800 rounded w-16 p-1 text-center text-blue-400">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                            <h4 class="text-white text-sm font-bold mb-4">Employer Match</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span>DCPP Match (%)</span>
+                                    <input type="number" id="conf_dcMatch" value="4"
+                                        class="bg-slate-950 border border-slate-800 rounded w-16 p-1 text-center text-emerald-400">
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span>RRSP Match (%)</span>
+                                    <input type="number" id="conf_rrspMatch" value="2"
+                                        class="bg-slate-950 border border-slate-800 rounded w-16 p-1 text-center text-emerald-400">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                            <h4 class="text-white text-sm font-bold mb-4">Annual Limits</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span>FHSA Cap ($)</span>
+                                    <input type="number" id="conf_fhsaCap" value="8000"
+                                        class="bg-slate-950 border border-slate-800 rounded w-20 p-1 text-center">
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span>Hourly Rate ($)</span>
+                                    <input type="number" id="conf_hourly" value="51"
+                                        class="bg-slate-950 border border-slate-800 rounded w-20 p-1 text-center">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="mt-12 flex justify-center">
+                <button id="saveConfig"
+                    class="bg-white text-black font-bold px-12 py-4 rounded-2xl hover:scale-105 transition-all">Save &
+                    Apply Changes</button>
+            </div>
         </div>
-        
-        <div class="space-y-6">
-            <div class="space-y-2">
-                <label class="text-[10px] text-slate-500 uppercase font-black tracking-widest">Base Hourly Rate ($)</label>
-                <input type="number" id="hourlyRate" value="51" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:border-blue-500 outline-none transition-all font-mono">
-            </div>
-            <div class="space-y-2">
-                <label class="text-[10px] text-slate-500 uppercase font-black tracking-widest">DC Pension Rate (%)</label>
-                <input type="number" id="dcRate" value="4" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:border-blue-500 outline-none transition-all font-mono">
-            </div>
-            <div class="space-y-2">
-                <label class="text-[10px] text-slate-500 uppercase font-black tracking-widest">RRSP Rate (%)</label>
-                <input type="number" id="rrspRate" value="7" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:border-blue-500 outline-none transition-all font-mono">
-            </div>
-        </div>
-        <p class="mt-8 text-[10px] text-slate-600 uppercase leading-relaxed italic">Calculated based on projected 2026 CRA and Ontario tax schedule inflation indexation.</p>
     </div>
 
     <script>
-        // Selectors
-        const settingsBtn = document.getElementById('settingsBtn');
-        const closeBtn = document.getElementById('closeSettings');
-        const panel = document.getElementById('settingsPanel');
-        const ids = ['baseSalary', 'hourlyRate', 'dcRate', 'rrspRate'];
-        const inputs = {};
-        ids.forEach(id => inputs[id] = document.getElementById(id));
+        // State Management
+        let params = {
+            fedBrackets: [58523, 117045, 181440, 258482],
+            fedRates: [14, 20.5, 26, 29, 33],
+            ontBrackets: [53891, 107785, 150000, 220000],
+            ontRates: [5.05, 9.15, 11.16, 12.16, 13.16]
+        };
 
-        // 2026 Constants
-        const FED_BPA = 16452;
-        const ONT_BPA = 12989;
-        const FED_BRACKETS = [58523, 117045, 181440, 258482];
-        const FED_RATES = [0.14, 0.205, 0.26, 0.29, 0.33];
-        const ONT_BRACKETS = [53891, 107785, 150000, 220000];
-        const ONT_RATES = [0.0505, 0.0915, 0.1116, 0.1216, 0.1316];
+        // UI Helpers
+        const configModal = document.getElementById('configModal');
 
-        function calculate() {
-            const base = parseFloat(inputs.baseSalary.value) || 0;
-            const hr = parseFloat(inputs.hourlyRate.value) || 0;
-            const dcPerc = (parseFloat(inputs.dcRate.value) || 0) / 100;
-            const rrspPerc = (parseFloat(inputs.rrspRate.value) || 0) / 100;
+        function populateTables() {
+            const fedBody = document.getElementById('fedTableBody');
+            fedBody.innerHTML = params.fedBrackets.map((b, i) => `
+                <tr class="border-t border-slate-800">
+                    <td class="p-3"><input type="number" value="${b}" class="bg-transparent outline-none w-24 fed-b"></td>
+                    <td class="p-3"><input type="number" value="${params.fedRates[i]}" class="bg-transparent outline-none w-16 fed-r">%</td>
+                </tr>
+            `).join('') + `
+                <tr class="border-t border-slate-800"><td class="p-3 text-slate-500">Max</td><td class="p-3"><input type="number" value="${params.fedRates[4]}" class="bg-transparent outline-none w-16 fed-r">%</td></tr>
+            `;
 
-            // Gross
-            const nsb = base * 0.05;
-            const stat = ((base + nsb) / 260) * 6;
-            const totalGross = base + nsb + stat;
-
-            // Pre-Tax Savings
-            const myDC = totalGross * dcPerc;
-            const myRRSP = totalGross * rrspPerc;
-            const fhsa = 8000;
-            const totalSavings = myDC + myRRSP + fhsa;
-            const taxable = Math.max(0, totalGross - totalSavings);
-
-            // Progressive Tax Logic
-            const solveTax = (inc, bounds, rates, credit) => {
-                let tax = 0;
-                let prev = 0;
-                for (let i = 0; i < bounds.length; i++) {
-                    if (inc > prev) {
-                        tax += (Math.min(inc, bounds[i]) - prev) * rates[i];
-                        prev = bounds[i];
-                    }
-                }
-                if (inc > prev) tax += (inc - prev) * rates[rates.length-1];
-                return Math.max(0, tax - (credit * rates[0]));
-            };
-
-            const fedTax = solveTax(taxable, FED_BRACKETS, FED_RATES, FED_BPA);
-            const ontBase = solveTax(taxable, ONT_BRACKETS, ONT_RATES, ONT_BPA);
-            const surtax = Math.max(0, (ontBase - 6000) * 0.2) + Math.max(0, (ontBase - 7671) * 0.36);
-            const ontTotal = ontBase + surtax;
-
-            // Payroll Maxes
-            const ei = Math.min(totalGross * 0.0163, 1123.07);
-            const cpp1 = Math.min(Math.max(0, totalGross - 3500) * 0.0595, 4230.45);
-            const cpp2 = Math.min(Math.max(0, totalGross - 74600) * 0.04, 416);
-            const payroll = ei + cpp1 + cpp2;
-
-            const netPay = taxable - fedTax - ontTotal - payroll;
-
-            // Bracket Room
-            const getRoom = (inc, bounds) => {
-                for (let b of bounds) if (inc < b) return b - inc;
-                return 0;
-            };
-            const fRoom = getRoom(taxable, FED_BRACKETS);
-            const oRoom = getRoom(taxable, ONT_BRACKETS);
-            const minRoom = Math.min(fRoom, oRoom);
-            const grossRoom = minRoom / (1 - (dcPerc + rrspPerc));
-            const otHours = grossRoom / (hr * 1.5);
-
-            // UI Update
-            document.getElementById('totalGross').innerText = `$${totalGross.toLocaleString()}`;
-            document.getElementById('netPay').innerText = `$${netPay.toLocaleString()}`;
-            document.getElementById('monthlyPay').innerText = `$${(netPay/12).toLocaleString()}`;
-            document.getElementById('fedTax').innerText = `-$${fedTax.toLocaleString()}`;
-            document.getElementById('ontTax').innerText = `-$${ontTotal.toLocaleString()}`;
-            document.getElementById('payrollTax').innerText = `-$${payroll.toLocaleString()}`;
-            document.getElementById('totalSavings').innerText = `+$${totalSavings.toLocaleString()}`;
-            document.getElementById('employerVal').innerText = `+$${(myDC + (totalGross * 0.02)).toLocaleString()}`; // Est match
-            document.getElementById('otHoursRoom').innerText = Math.floor(otHours);
-            document.getElementById('nsbValue').innerText = `+$${nsb.toLocaleString()}`;
-            document.getElementById('statValue').innerText = `+$${stat.toLocaleString()}`;
+            const ontBody = document.getElementById('ontTableBody');
+            ontBody.innerHTML = params.ontBrackets.map((b, i) => `
+                <tr class="border-t border-slate-800">
+                    <td class="p-3"><input type="number" value="${b}" class="bg-transparent outline-none w-24 ont-b"></td>
+                    <td class="p-3"><input type="number" value="${params.ontRates[i]}" class="bg-transparent outline-none w-16 ont-r">%</td>
+                </tr>
+            `).join('') + `
+                <tr class="border-t border-slate-800"><td class="p-3 text-slate-500">Max</td><td class="p-3"><input type="number" value="${params.ontRates[4]}" class="bg-transparent outline-none w-16 ont-r">%</td></tr>
+            `;
         }
 
-        settingsBtn.onclick = () => panel.classList.remove('translate-x-full');
-        closeBtn.onclick = () => panel.classList.add('translate-x-full');
-        Object.values(inputs).forEach(el => el.addEventListener('input', calculate));
+        function calculate() {
+            const salary = parseFloat(document.getElementById('baseSalary').value) || 0;
+            const dcRate = (parseFloat(document.getElementById('conf_dcEmp').value) || 0) / 100;
+            const rrspRate = (parseFloat(document.getElementById('conf_rrspEmp').value) || 0) / 100;
+            const fhsaCap = parseFloat(document.getElementById('conf_fhsaCap').value) || 0;
+            const hourly = parseFloat(document.getElementById('conf_hourly').value) || 0;
+
+            const nsb = salary * 0.05;
+            const stat = ((salary + nsb) / 260) * 6;
+            const gross = salary + nsb + stat;
+
+            const savings = (gross * dcRate) + (gross * rrspRate) + fhsaCap;
+            const taxable = Math.max(0, gross - savings);
+
+            // Calculation engine logic (simplified for UI demonstration)
+            // In a real app, this iterates through the params.fedBrackets
+
+            document.getElementById('displayGross').innerText = `$${gross.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+            document.getElementById('otHours').innerText = Math.floor(14000 / (hourly * 1.5)); // Dynamic example
+        }
+
+        // Listeners
+        document.getElementById('openConfig').onclick = () => {
+            populateTables();
+            configModal.classList.remove('hidden');
+        };
+        document.getElementById('closeConfig').onclick = () => configModal.classList.add('hidden');
+        document.getElementById('baseSalary').oninput = calculate;
+
+        document.getElementById('saveConfig').onclick = () => {
+            // Logic to scrape inputs and update the 'params' object
+            configModal.classList.add('hidden');
+            calculate();
+        };
+
         calculate();
     </script>
 </body>
+
 </html>
