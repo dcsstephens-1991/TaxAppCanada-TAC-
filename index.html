@@ -13,7 +13,22 @@
         .gradient-text { background: linear-gradient(to right, #60a5fa, #a855f7); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
         #setupWizard { transition: opacity 0.5s ease-in-out; }
         .locked { filter: blur(25px); pointer-events: none; }
-        .choice-btn { @apply w-full text-left p-4 bg-slate-950 border border-slate-800 rounded-2xl hover:border-blue-500 hover:bg-blue-500/5 transition-all flex items-center justify-between; }
+        .choice-btn {
+            width: 100%;
+            text-align: left;
+            padding: 1rem;
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+        .choice-btn:hover {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.08);
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-200 min-h-screen font-sans selection:bg-blue-500/30">
